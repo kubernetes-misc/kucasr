@@ -2,8 +2,8 @@ package cron
 
 import (
 	"fmt"
-	"github.com/kubernetes-misc/chpa/controller"
-	"github.com/kubernetes-misc/chpa/model"
+	"github.com/kubernetes-misc/kudecs/controller"
+	"github.com/kubernetes-misc/kudecs/model"
 	cron "github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 	"sync"

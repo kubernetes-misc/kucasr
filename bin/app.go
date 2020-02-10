@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kubernetes-misc/chpa/client"
-	"github.com/kubernetes-misc/chpa/cron"
-	"github.com/kubernetes-misc/chpa/model"
+	"github.com/kubernetes-misc/kudecs/client"
+	"github.com/kubernetes-misc/kudecs/cron"
+	"github.com/kubernetes-misc/kudecs/model"
 	cronV3 "github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 	"os"

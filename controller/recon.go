@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"github.com/kubernetes-misc/chpa/client"
-	"github.com/kubernetes-misc/chpa/model"
+	"github.com/kubernetes-misc/kudecs/client"
+	"github.com/kubernetes-misc/kudecs/model"
 	"github.com/sirupsen/logrus"
 )
 
