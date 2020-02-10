@@ -1,0 +1,17 @@
+apiVersion: "kubernetes-misc.xyz/v1"
+kind: kudecs
+metadata:
+  name: example-cert-kudecs
+spec:
+  days: 365
+  countryName: ZA
+  stateName: GP
+  localityName: JHB
+  organizationName: Kubernetes Misc
+  organizationalUnit: Orbital Kinetic Weapons Platforms
+  injectPrivateNameSpaces:
+    - default
+  injectPublicNameSpaces:
+    - default
+
+

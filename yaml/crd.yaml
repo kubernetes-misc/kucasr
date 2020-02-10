@@ -49,11 +49,11 @@ spec:
               type: string
             emailAddress:
               type: string
-            injectPrivateKeyNameSpaces:
+            injectPrivateNameSpaces:
               type: array
               items:
                 type: string
-            injectPublicKeyNameSpaces:
+            injectPublicNameSpaces:
               type: array
               items:
                 type: string
