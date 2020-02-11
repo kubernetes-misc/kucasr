@@ -46,18 +46,18 @@ func checkInjected(cs model.KudecsV1) {
 
 	//Delete broken / out of data secrets
 	for _, i := range cs.Spec.InjectPrivateNamespace {
-		deleteIfWrong("private", i, masterSecret)
+		deleteIfWrong(model.DefaultPrivate, i, masterSecret)
 	}
 	for _, i := range cs.Spec.InjectPublicNamespace {
-		deleteIfWrong("public", i, masterSecret)
+		deleteIfWrong(model.DefaultPublic, i, masterSecret)
 	}
 
 	//Create missing secrets
 	for _, i := range cs.Spec.InjectPrivateNamespace {
-		createSecretFromMaster("private", i, masterSecret)
+		createSecretFromMaster(model.DefaultPrivate, i, masterSecret)
 	}
 	for _, i := range cs.Spec.InjectPublicNamespace {
-		createSecretFromMaster("public", i, masterSecret)
+		createSecretFromMaster(model.DefaultPublic, i, masterSecret)
 	}
 
 }

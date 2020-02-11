@@ -117,7 +117,7 @@ func getInjectedSecretTasks(cs model.KudecsV1) (create []model.InjectNamespaceV1
 			create = append(create, i)
 			continue
 		}
-		if !certsEqual(masterSecret, s, "private") {
+		if !certsEqual(masterSecret, s, model.DefaultPrivate) {
 			update = append(update, i)
 		}
 	}
@@ -127,7 +127,7 @@ func getInjectedSecretTasks(cs model.KudecsV1) (create []model.InjectNamespaceV1
 			create = append(create, i)
 			continue
 		}
-		if !certsEqual(masterSecret, s, "public") {
+		if !certsEqual(masterSecret, s, model.DefaultPublic) {
 			update = append(update, i)
 		}
 	}

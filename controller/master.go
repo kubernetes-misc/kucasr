@@ -134,8 +134,8 @@ func newMasterSecret(cs model.KudecsV1) (secret *cv1.Secret) {
 			},
 		},
 		Data: map[string][]byte{
-			"private": private,
-			"public":  public,
+			model.DefaultPrivate: private,
+			model.DefaultPublic:  public,
 		},
 		Type: cv1.SecretTypeOpaque,
 	}
@@ -157,8 +157,8 @@ func updateMasterSecret(cs model.KudecsV1, secret *cv1.Secret) {
 	n := fmt.Sprintf("%v", genReq.NotAfter.UnixNano())
 	secret.Labels[model.ExpiresLabel] = n
 	secret.Data = map[string][]byte{
-		"private": private,
-		"public":  public,
+		model.DefaultPrivate: private,
+		model.DefaultPublic:  public,
 	}
 
 }
