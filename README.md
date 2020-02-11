@@ -39,8 +39,19 @@ spec:
       keyName: public
 ```
 
+Apply the example
 ```shell script
 kubectl apply -f example.yaml
+```
+
+Check that you can see your change
+```shell script
+kubectl get kudecs/example -o yaml
+```
+
+Check the application logs to see that it is running
+```shell script
+kubectl logs deployment/kudecs
 ```
 
 
