@@ -29,19 +29,20 @@ type MetadataV1 struct {
 }
 
 type SpecV1 struct {
-	Days                   int                 `json:"days"`
-	CountryName            string              `json:"countryName"`
-	StateName              string              `json:"stateName"`
-	LocalityName           string              `json:"localityName"`
-	OrganizationName       string              `json:"organizationName"`
-	OrganizationalUnit     string              `json:"organizationalUnit"`
-	CommonName             string              `json:"commonName"`
-	EmailAddress           string              `json:"emailAddress"`
-	InjectPrivateNamespace []InjectNamespaceV1 `json:"injectPrivateNamespaces"`
-	InjectPublicNamespace  []InjectNamespaceV1 `json:"injectPublicNamespaces"`
+	Days               int                 `json:"days"`
+	CountryName        string              `json:"countryName"`
+	StateName          string              `json:"stateName"`
+	LocalityName       string              `json:"localityName"`
+	OrganizationName   string              `json:"organizationName"`
+	OrganizationalUnit string              `json:"organizationalUnit"`
+	CommonName         string              `json:"commonName"`
+	EmailAddress       string              `json:"emailAddress"`
+	InjectedSecrets    []InjectedSecretsV1 `json:"injectedSecrets"`
 }
 
-type InjectNamespaceV1 struct {
+type InjectedSecretsV1 struct {
 	Namespace  string `json:"namespace"`
 	SecretName string `json:"secretName"`
+	SourceKey  string `json:"sourceKey"`
+	KeyName    string `json:"keyName"`
 }

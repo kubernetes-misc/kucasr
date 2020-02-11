@@ -9,9 +9,12 @@ spec:
   localityName: JHB
   organizationName: Kubernetes Misc
   organizationalUnit: Orbital Kinetic Weapons Platforms
-  injectPrivateNamespaces:
-    - namespace: default
+  injectedSecrets:
+    - namespace: ns1
       secretName: okwp-secret-key
-  injectPublicNamespaces:
-    - namespace: default
-      secretName: okwp-secret-pub
+      sourceKey: private
+      keyName: private
+    - namespace: ns2
+      secretName: okwp-secret-key
+      sourceKey: public
+      keyName: some-public-key

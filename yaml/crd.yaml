@@ -49,22 +49,21 @@ spec:
               type: string
             emailAddress:
               type: string
-            injectPrivateNamespaces:
+            injectedSecrets:
               type: array
               items:
                 type: object
                 properties:
+                  # The namespace to create the secret in
                   namespace:
                     type: string
+                  # The name of the secret
                   secretName:
                     type: string
-            injectPublicNamespaces:
-              type: array
-              items:
-                type: object
-                properties:
-                  namespace:
+                  # private / public - which to use from the master
+                  sourceKey:
                     type: string
-                  secretName:
+                    enum: ["private", "public"]
+                  # what to call the "file" in the secret
+                  keyName:
                     type: string
-
