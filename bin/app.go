@@ -1,13 +1,11 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/kubernetes-misc/kudecs/client"
+	"github.com/kubernetes-misc/kudecs/controller"
 	"github.com/kubernetes-misc/kudecs/model"
 	cronV3 "github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
-	"github.com/tidwall/pretty"
 	"os"
 	//
 	// Uncomment to load all auth plugins
@@ -19,7 +17,7 @@ import (
 const DefaultCronSpec = "*/10 * * * * *"
 
 func main() {
-	logrus.Println("KUBERNETES DECLARATIVE CERTS AS SECRETS")
+	logrus.Println("Kubernetes Declarative Certificates Secrets")
 	logrus.Println("Starting up...")
 	err := client.BuildClient()
 	if err != nil {
@@ -32,10 +30,10 @@ func main() {
 	}
 	c := cronV3.New(cronV3.WithSeconds())
 	_, err = c.AddJob(cronSpec, model.Job{
-		F: updateCronScales,
+		F: update,
 	})
 	c.Start()
-	updateCronScales()
+	update()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +42,7 @@ func main() {
 
 }
 
-func updateCronScales() {
+func update() {
 
 	logrus.Debugln("> Getting all namespaces")
 	nsl, err := client.GetAllNS()
@@ -64,11 +62,8 @@ func updateCronScales() {
 		allCRDs = append(allCRDs, crds...)
 	}
 
-	//TODO: allCRDs
-
 	for _, a := range allCRDs {
-		b, _ := json.Marshal(a)
-		fmt.Println(string(pretty.Pretty(b)))
+		controller.ReconHub.Add(a)
 	}
 
 }
