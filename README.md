@@ -54,6 +54,11 @@ Check the application logs to see that it is running
 kubectl logs deployment/kudecs
 ```
 
+If everything went well you will be able to see secrets. Otherwise check the steps above.
+```shell script
+kubectl get secrets -o yaml
+```
+
 
 ## Roadmap
 
