@@ -1,5 +1,5 @@
 apiVersion: "kubernetes-misc.xyz/v1"
-kind: kudecs
+kind: kudec
 metadata:
   name: example-cert-kudecs
 spec:
@@ -9,9 +9,9 @@ spec:
   localityName: JHB
   organizationName: Kubernetes Misc
   organizationalUnit: Orbital Kinetic Weapons Platforms
-  injectPrivateNameSpaces:
-    - default
-  injectPublicNameSpaces:
-    - default
-
-
+  injectPrivateNamespaces:
+    - namespace: default
+      secretName: okwp-secret-key
+  injectPublicNamespaces:
+    - namespace: default
+      secretName: okwp-secret-pub

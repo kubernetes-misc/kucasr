@@ -62,7 +62,7 @@ func GetAllNS() ([]string, error) {
 	return result, nil
 }
 
-func GetAllCRD(namespace string, crd schema.GroupVersionResource) (result []model.CronHPAV1, err error) {
+func GetAllCRD(namespace string, crd schema.GroupVersionResource) (result []model.KudecsV1, err error) {
 	logrus.Debugln("== getting CRDs ==")
 	crdClient := dynClient.Resource(crd)
 	ls, err := crdClient.Namespace(namespace).List(metav1.ListOptions{})
@@ -71,14 +71,14 @@ func GetAllCRD(namespace string, crd schema.GroupVersionResource) (result []mode
 		return
 	}
 
-	result = make([]model.CronHPAV1, len(ls.Items))
+	result = make([]model.KudecsV1, len(ls.Items))
 	for i, entry := range ls.Items {
 		b, err := entry.MarshalJSON()
 		if err != nil {
 			logrus.Errorln(err)
 			continue
 		}
-		cs := model.CronHPAV1{}
+		cs := model.KudecsV1{}
 		err = json.Unmarshal(b, &cs)
 		if err != nil {
 			logrus.Errorln(err)

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/kubernetes-misc/kudecs/client"
-	"github.com/kubernetes-misc/kudecs/cron"
 	"github.com/kubernetes-misc/kudecs/model"
 	cronV3 "github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
+	"github.com/tidwall/pretty"
 	"os"
 	//
 	// Uncomment to load all auth plugins
@@ -14,9 +16,10 @@ import (
 	// Or uncomment to load specific auth plugins
 )
 
-const DefaultCronSpec = "*/5 * * * * *"
+const DefaultCronSpec = "*/10 * * * * *"
 
 func main() {
+	logrus.Println("KUBERNETES DECLARATIVE CERTS AS SECRETS")
 	logrus.Println("Starting up...")
 	err := client.BuildClient()
 	if err != nil {
@@ -50,16 +53,22 @@ func updateCronScales() {
 		return
 	}
 
-	allCRDS := make([]model.CronHPAV1, 0)
+	allCRDs := make([]model.KudecsV1, 0)
 	for _, ns := range nsl {
 		logrus.Debugln(">> Getting CRDs in", ns)
-		crds, err := client.GetAllCRD(ns, model.CronHPAV1CRDSchema)
+		crds, err := client.GetAllCRD(ns, model.KudecsV1CRDSchema)
 		if err != nil {
 			logrus.Errorln(err)
 			return
 		}
-		allCRDS = append(allCRDS, crds...)
+		allCRDs = append(allCRDs, crds...)
 	}
-	cron.MatchJobs(allCRDS)
+
+	//TODO: allCRDs
+
+	for _, a := range allCRDs {
+		b, _ := json.Marshal(a)
+		fmt.Println(string(pretty.Pretty(b)))
+	}
 
 }
