@@ -8,7 +8,6 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"encoding/base64"
 	"log"
 	"math/big"
 	"net"
@@ -46,7 +45,7 @@ type GenerateRequest struct {
 	NotAfter           time.Time
 }
 
-func GenerateCert(request GenerateRequest) (private, public string) {
+func GenerateCert(request GenerateRequest) (private, public []byte) {
 	var priv interface{}
 	var err error
 	switch ecdsaCurve {
@@ -117,8 +116,8 @@ func GenerateCert(request GenerateRequest) (private, public string) {
 		log.Fatalf("Unable to marshal private key: %v", err)
 	}
 
-	private = base64.StdEncoding.EncodeToString(privBytes)
-	public = base64.StdEncoding.EncodeToString(derBytes)
+	private = privBytes
+	public = derBytes
 
 	return
 

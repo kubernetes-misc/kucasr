@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/apps/v1"
 	asv1 "k8s.io/api/autoscaling/v1"
+	cv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
@@ -122,4 +123,14 @@ func UpdateHPA(ns string, hpa *asv1.HorizontalPodAutoscaler) (err error) {
 		return
 	}
 	return
+}
+
+func GetSecret(ns, name string) (secret *cv1.Secret, err error) {
+	secret, err = clientset.CoreV1().Secrets(ns).Get(name, metav1.GetOptions{})
+	return
+}
+
+func CreateSecret(ns string, secret *cv1.Secret) error {
+	_, err := clientset.CoreV1().Secrets(ns).Create(secret)
+	return err
 }

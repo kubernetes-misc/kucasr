@@ -19,6 +19,10 @@ func (cs KudecsV1) GetID() string {
 	return "kudecsV1." + cs.Metadata.Namespace + "." + cs.Metadata.Name
 }
 
+func (cs KudecsV1) GetMasterSecretName() string {
+	return "kudecs-v1-master-" + cs.Metadata.Namespace + "-" + cs.Metadata.Name
+}
+
 type MetadataV1 struct {
 	Name      string `json:"name"`
 	Namespace string `json:"namespace"`
