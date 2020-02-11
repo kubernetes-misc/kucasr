@@ -18,3 +18,24 @@ spec:
       secretName: okwp-secret-pub
       sourceKey: public
       keyName: some-public-key
+---
+apiVersion: "kubernetes-misc.xyz/v1"
+kind: kudec
+metadata:
+  name: example-together
+spec:
+  days: 365
+  countryName: ZA
+  stateName: GP
+  localityName: JHB
+  organizationName: Kubernetes Misc
+  organizationalUnit: Orbital Kinetic Weapons Platforms
+  injectedSecrets:
+    - namespace: default
+      secretName: together
+      sourceKey: private
+      keyName: private
+    - namespace: default
+      secretName: together
+      sourceKey: public
+      keyName: public
