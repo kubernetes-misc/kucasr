@@ -97,6 +97,11 @@ func CreateSecret(ns string, secret *cv1.Secret) error {
 	return err
 }
 
+func UpdateSecret(ns string, secret *cv1.Secret) error {
+	_, err := clientset.CoreV1().Secrets(ns).Update(secret)
+	return err
+}
+
 func DeleteSecret(ns, name string) (err error) {
 	return clientset.CoreV1().Secrets(ns).Delete(name, &metav1.DeleteOptions{})
 }
