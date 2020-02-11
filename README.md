@@ -9,9 +9,40 @@ KUberenetes DEclarative Certificates as Secrets<br />
 
 ## How to use
 
+### Create the crd
+
 ### Deploy to cluster
+... TBA
 
 ### Create a kudec (CRD)
+
+- Create a new kudecs yaml file `example.yaml` and populate with the following yaml
+```yaml
+apiVersion: "kubernetes-misc.xyz/v1"
+kind: kudec
+metadata:
+  name: example
+spec:
+  days: 365
+  countryName: USA
+  stateName: NY
+  organizationName: Kubernetes Misc
+  organizationalUnit: IT
+  injectedSecrets:
+    - namespace: default
+      secretName: okwp-secret-key
+      sourceKey: private
+      keyName: private
+    - namespace: default
+      secretName: okwp-secret-pub
+      sourceKey: public
+      keyName: public
+```
+
+```shell script
+kubectl apply -f example.yaml
+```
+
 
 ## Roadmap
 
