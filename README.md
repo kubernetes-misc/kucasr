@@ -10,9 +10,44 @@ KUberenetes DEclarative Certificates as Secrets<br />
 ## How to use
 
 ### Create the crd
+```shell script
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-misc/kudecs/master/yaml/crd.yaml
+```
 
 ### Deploy to cluster
-... TBA
+- Create a new file called `kudecs.yaml`
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kudecs
+  namespace: kudecs
+spec:
+  selector:
+    matchLabels:
+      app: kudecs
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kudecs
+    spec:
+      containers:
+      - env:
+        - name: storeNamespace
+          value: kudecs
+        image: kubernetesmisc/kudecs:latest
+        imagePullPolicy: Always
+        name: kudecs
+        resources:
+          limits:
+            cpu: 500m
+            memory: 64Mi
+          requests:
+            cpu: 500m
+            memory: 64Mi
+```
+
 
 ### Create a kudec (CRD)
 
