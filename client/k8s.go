@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"github.com/kubernetes-misc/kudecs/model"
 	"github.com/sirupsen/logrus"
-	v1 "k8s.io/api/apps/v1"
-	asv1 "k8s.io/api/autoscaling/v1"
 	cv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -85,42 +83,6 @@ func GetAllCRD(namespace string, crd schema.GroupVersionResource) (result []mode
 			logrus.Errorln(err)
 		}
 		result[i] = cs
-	}
-	return
-}
-
-func GetDeployment(ns, name string) (deployment *v1.Deployment, err error) {
-	logrus.Debugln("== getting deployment ==")
-	deployment, err = clientset.AppsV1().Deployments(ns).Get(name, metav1.GetOptions{})
-	if err != nil {
-		logrus.Errorln(err)
-		return
-	}
-	return
-}
-
-func UpdateDeployment(deployment *v1.Deployment) (err error) {
-	logrus.Debugln("== update deployment ==")
-	_, err = clientset.AppsV1().Deployments(deployment.Namespace).Update(deployment)
-	return
-}
-
-func GetHPA(ns, name string) (hpa *asv1.HorizontalPodAutoscaler, err error) {
-	logrus.Debugln("== getting HPA ==")
-	hpa, err = clientset.AutoscalingV1().HorizontalPodAutoscalers(ns).Get(name, metav1.GetOptions{})
-	if err != nil {
-		logrus.Errorln(err)
-		return
-	}
-	return
-}
-
-func UpdateHPA(ns string, hpa *asv1.HorizontalPodAutoscaler) (err error) {
-	logrus.Debugln("== updating HPA ==")
-	_, err = clientset.AutoscalingV1().HorizontalPodAutoscalers(ns).Update(hpa)
-	if err != nil {
-		logrus.Errorln(err)
-		return
 	}
 	return
 }
