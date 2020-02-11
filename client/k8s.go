@@ -134,3 +134,7 @@ func CreateSecret(ns string, secret *cv1.Secret) error {
 	_, err := clientset.CoreV1().Secrets(ns).Create(secret)
 	return err
 }
+
+func DeleteSecret(ns, name string) (err error) {
+	return clientset.CoreV1().Secrets(ns).Delete(name, &metav1.DeleteOptions{})
+}
