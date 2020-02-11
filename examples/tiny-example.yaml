@@ -10,11 +10,11 @@ spec:
   organizationName: Kubernetes Misc
   organizationalUnit: Orbital Kinetic Weapons Platforms
   injectedSecrets:
-    - namespace: ns1
+    - namespace: default
       secretName: okwp-secret-key
       sourceKey: private
       keyName: private
-    - namespace: ns2
-      secretName: okwp-secret-key
+    - namespace: default
+      secretName: okwp-secret-pub
       sourceKey: public
       keyName: some-public-key

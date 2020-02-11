@@ -1,12 +1,7 @@
 package controller
 
 import (
-	"bytes"
-	"fmt"
-	"github.com/kubernetes-misc/kudecs/client"
 	"github.com/kubernetes-misc/kudecs/model"
-	"github.com/sirupsen/logrus"
-	v1 "k8s.io/api/core/v1"
 )
 
 func reconcileInjected(cs model.KudecsV1) {
@@ -104,42 +99,42 @@ func reconcileInjected(cs model.KudecsV1) {
 
 }
 
-func getInjectedSecretTasks(cs model.KudecsV1) (create []model.InjectNamespaceV1, update []model.InjectNamespaceV1, merge []model.InjectNamespaceV1) {
-	masterSecret, err := client.GetSecret(model.StoreNamespace, cs.GetMasterSecretName())
-	if err != nil || masterSecret == nil {
-		logrus.Errorln(fmt.Sprintf("unexpected error. Master secret (%s/%s) should exist. Skipping injected", model.StoreNamespace, cs.GetMasterSecretName()))
-		return
-	}
-
-	for _, i := range cs.Spec.InjectPrivateNamespace {
-		s, err := client.GetSecret(i.Namespace, i.SecretName)
-		if err != nil || s == nil {
-			create = append(create, i)
-			continue
-		}
-		if !certsEqual(masterSecret, s, model.DefaultPrivate) {
-			update = append(update, i)
-		}
-	}
-	for _, i := range cs.Spec.InjectPublicNamespace {
-		s, err := client.GetSecret(i.Namespace, i.SecretName)
-		if err != nil || s == nil {
-			create = append(create, i)
-			continue
-		}
-		if !certsEqual(masterSecret, s, model.DefaultPublic) {
-			update = append(update, i)
-		}
-	}
-	return
-}
-
-func certsEqual(master, secret *v1.Secret, dataKey string) bool {
-	if master.Labels[model.ExpiresLabel] != secret.Labels[model.ExpiresLabel] {
-		return false
-	}
-	if !bytes.Equal(master.Data[dataKey], secret.Data[dataKey]) {
-		return false
-	}
-	return true
-}
+//func getInjectedSecretTasks(cs model.KudecsV1) (create []model.InjectedSecretsV1, update []model.InjectedSecretsV1, merge []model.InjectedSecretsV1) {
+//	masterSecret, err := client.GetSecret(model.StoreNamespace, cs.GetMasterSecretName())
+//	if err != nil || masterSecret == nil {
+//		logrus.Errorln(fmt.Sprintf("unexpected error. Master secret (%s/%s) should exist. Skipping injected", model.StoreNamespace, cs.GetMasterSecretName()))
+//		return
+//	}
+//
+//	for _, i := range cs.Spec.InjectPrivateNamespace {
+//		s, err := client.GetSecret(i.Namespace, i.SecretName)
+//		if err != nil || s == nil {
+//			create = append(create, i)
+//			continue
+//		}
+//		if !certsEqual(masterSecret, s, model.DefaultPrivate) {
+//			update = append(update, i)
+//		}
+//	}
+//	for _, i := range cs.Spec.InjectPublicNamespace {
+//		s, err := client.GetSecret(i.Namespace, i.SecretName)
+//		if err != nil || s == nil {
+//			create = append(create, i)
+//			continue
+//		}
+//		if !certsEqual(masterSecret, s, model.DefaultPublic) {
+//			update = append(update, i)
+//		}
+//	}
+//	return
+//}
+//
+//func certsEqual(master, secret *v1.Secret, dataKey string) bool {
+//	if master.Labels[model.ExpiresLabel] != secret.Labels[model.ExpiresLabel] {
+//		return false
+//	}
+//	if !bytes.Equal(master.Data[dataKey], secret.Data[dataKey]) {
+//		return false
+//	}
+//	return true
+//}

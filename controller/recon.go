@@ -45,34 +45,29 @@ func checkInjected(cs model.KudecsV1) {
 	}
 
 	//Delete broken / out of data secrets
-	for _, i := range cs.Spec.InjectPrivateNamespace {
-		deleteIfWrong(model.DefaultPrivate, i, masterSecret)
-	}
-	for _, i := range cs.Spec.InjectPublicNamespace {
-		deleteIfWrong(model.DefaultPublic, i, masterSecret)
+	for _, i := range cs.Spec.InjectedSecrets {
+		deleteIfWrong(i, masterSecret)
 	}
 
 	//Create missing secrets
-	for _, i := range cs.Spec.InjectPrivateNamespace {
-		createSecretFromMaster(model.DefaultPrivate, i, masterSecret)
-	}
-	for _, i := range cs.Spec.InjectPublicNamespace {
-		createSecretFromMaster(model.DefaultPublic, i, masterSecret)
+	for _, i := range cs.Spec.InjectedSecrets {
+		createSecretFromMaster(i, masterSecret)
 	}
 
 }
 
-func createSecretFromMaster(dataKey string, i model.InjectNamespaceV1, masterSecret *cv1.Secret) {
+func createSecretFromMaster(i model.InjectedSecretsV1, masterSecret *cv1.Secret) {
 	//Escape if secret exists as we checked that in deleteIfWrong()
 	if s, err := client.GetSecret(i.Namespace, i.SecretName); err == nil && s != nil {
 		return
 	}
 	logrus.Println(fmt.Sprintf("> Injecting secret %s/%s", i.Namespace, i.SecretName))
 	logrus.Println(fmt.Sprintf("  Master secret: %s/%s", model.StoreNamespace, masterSecret.Name))
-	logrus.Println(fmt.Sprintf("  Injected secret: %s", dataKey))
-	logrus.Println(fmt.Sprintf("  Injected as: %s/%s", i.Namespace, i.SecretName))
+	logrus.Println(fmt.Sprintf("  K8s object: %s/%s", i.Namespace, i.SecretName))
+	logrus.Println(fmt.Sprintf("  Injected from: %s", i.SourceKey))
+	logrus.Println(fmt.Sprintf("  Injected as: %s", i.KeyName))
 
-	k := masterSecret.Data[dataKey]
+	k := masterSecret.Data[i.SourceKey]
 	se := &cv1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: i.SecretName,
@@ -81,7 +76,7 @@ func createSecretFromMaster(dataKey string, i model.InjectNamespaceV1, masterSec
 			},
 		},
 		Data: map[string][]byte{
-			dataKey: k,
+			i.KeyName: k,
 		},
 		Type: cv1.SecretTypeOpaque,
 	}
@@ -96,7 +91,7 @@ func createSecretFromMaster(dataKey string, i model.InjectNamespaceV1, masterSec
 
 }
 
-func deleteIfWrong(dataKey string, i model.InjectNamespaceV1, masterSecret *cv1.Secret) {
+func deleteIfWrong(i model.InjectedSecretsV1, masterSecret *cv1.Secret) {
 	secret, err := client.GetSecret(i.Namespace, i.SecretName)
 	if err != nil || secret == nil {
 		logrus.Debugln("secret ", i.Namespace, i.SecretName, "does not exist... and that is ok")
@@ -105,12 +100,12 @@ func deleteIfWrong(dataKey string, i model.InjectNamespaceV1, masterSecret *cv1.
 	mustDelete := false
 
 	//Check if the secrets have different expiry dates
-	mustDelete = mustDelete || secret.Labels["expires"] != masterSecret.Labels["expires"]
+	mustDelete = mustDelete || secret.Labels[model.ExpiresLabel] != masterSecret.Labels[model.ExpiresLabel]
 
 	//Check that private or public secret is correct
-	mustDelete = mustDelete || !bytes.Equal(secret.Data[dataKey], masterSecret.Data[dataKey])
+	mustDelete = mustDelete || !bytes.Equal(secret.Data[i.KeyName], masterSecret.Data[i.SourceKey])
 
-	logrus.Debugln("Should we delete the injected secret? ", mustDelete)
+	logrus.Debugln("Should we delete the injected secret? ", mustDelete, i.SecretName)
 
 	if mustDelete {
 		logrus.Println(fmt.Sprintf("> Deleting secret %s/%s", i.Namespace, i.SecretName))
