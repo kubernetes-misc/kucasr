@@ -86,12 +86,12 @@ func getInjectedSecretTasks(cs model.KudecsV1) (create []model.InjectedSecretsV1
 	for _, i := range cs.Spec.InjectedSecrets {
 		s, err := client.GetSecret(i.Namespace, i.SecretName)
 		if err != nil || s == nil {
-			logrus.Infoln(fmt.Sprintf("going need to create injected cert %s/%s", i.Namespace, i.SecretName))
+			logrus.Infoln(fmt.Sprintf("  Injected cert %s/%s will need to be created", i.Namespace, i.SecretName))
 			create = append(create, i)
 			continue
 		}
 		if !certsEqual(masterSecret, s, i) {
-			logrus.Infoln(fmt.Sprintf("going need to update injected cert %s/%s", i.Namespace, i.SecretName))
+			logrus.Infoln(fmt.Sprintf("  Injected cert %s/%s will need to be updated", i.Namespace, i.SecretName))
 			update = append(update, i)
 		}
 	}
