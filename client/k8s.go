@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/kubernetes-misc/kudecs/model"
 	"github.com/sirupsen/logrus"
+	"github.com/tidwall/pretty"
 	cv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -61,6 +62,16 @@ func GetAllNS() ([]string, error) {
 	return result, nil
 }
 
+func SubscribeCRDS(namespace string, crd schema.GroupVersionResource) {
+	logrus.Debugln("== subscribing CRDs ==")
+	crdClient := dynClient.Resource(crd)
+	w, _ := crdClient.Namespace(namespace).Watch(metav1.ListOptions{})
+	for r := range w.ResultChan() {
+		b, _ := json.Marshal(r)
+		logrus.Println(string(pretty.Pretty(b)))
+	}
+
+}
 func GetAllCRD(namespace string, crd schema.GroupVersionResource) (result []model.KudecsV1, err error) {
 	logrus.Debugln("== getting CRDs ==")
 	crdClient := dynClient.Resource(crd)

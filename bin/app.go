@@ -42,6 +42,7 @@ func main() {
 		panic(err)
 	}
 	logrus.SetLevel(logrus.InfoLevel)
+	go client.SubscribeCRDS("default", model.KudecsV1CRDSchema)
 	select {}
 
 }
