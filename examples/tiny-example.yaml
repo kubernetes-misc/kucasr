@@ -17,7 +17,7 @@ spec:
     - namespace: default
       secretName: okwp-secret-pub
       sourceKey: public
-      keyName: some-public-key
+      keyName: public
 ---
 apiVersion: "kubernetes-misc.xyz/v1"
 kind: kudec
