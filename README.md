@@ -47,10 +47,13 @@ kubectl get secrets -o yaml
 
 ## Roadmap
 
+### Version 1 
+
+
 ### Version 2
 - HA deployment support
 - Namespace restrictions / exclusions
-
+- External certificate generation providers
 
 
 
