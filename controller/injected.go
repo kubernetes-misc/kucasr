@@ -7,7 +7,6 @@ import (
 	"github.com/kubernetes-misc/kudecs/model"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func reconcileInjected(cs model.KudecsV1) {
@@ -21,27 +20,21 @@ func reconcileInjected(cs model.KudecsV1) {
 		return
 	}
 
+	reconcileInjectedCreates(cs, create, masterSecret)
+	reconcileInjectedUpdates(cs, create, masterSecret)
+
+}
+
+func reconcileInjectedCreates(cs model.KudecsV1, create []model.InjectedSecretsV1, masterSecret *v1.Secret) {
 	for _, c := range create {
 		logrus.Infoln("> Creating injected certificate")
 		logrus.Infoln(fmt.Sprintf("  Requester: %s/%s", cs.Metadata.Namespace, cs.Metadata.Name))
 		logrus.Infoln(fmt.Sprintf("  Master stored as: %s/%s", model.StoreNamespace, cs.GetMasterSecretName()))
 		logrus.Infoln(fmt.Sprintf("  Secret to be created: %s/%s", c.Namespace, c.SecretName))
 
-		k := masterSecret.Data[c.SourceKey]
-		s := &v1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: c.SecretName,
-				Labels: map[string]string{
-					model.ExpiresLabel + "-" + c.KeyName: masterSecret.Labels[model.ExpiresLabel],
-				},
-			},
-			Data: map[string][]byte{
-				c.KeyName: k,
-			},
-			Type: v1.SecretTypeOpaque,
-		}
+		s := model.NewInjectSecret(c, masterSecret)
 
-		err = client.CreateSecret(c.Namespace, s)
+		err := client.CreateSecret(c.Namespace, s)
 		if err != nil {
 			logrus.Errorln(fmt.Sprintf("unexpected error creating injected secret (%s/%s)", c.Namespace, c.SecretName))
 			logrus.Infoln(model.LogFAIL)
@@ -50,6 +43,10 @@ func reconcileInjected(cs model.KudecsV1) {
 		logrus.Infoln(model.LogOK)
 
 	}
+
+}
+
+func reconcileInjectedUpdates(cs model.KudecsV1, update []model.InjectedSecretsV1, masterSecret *v1.Secret) {
 	for _, c := range update {
 		logrus.Infoln("> Updating injected certificate")
 		logrus.Infoln(fmt.Sprintf("  Requester: %s/%s", cs.Metadata.Namespace, cs.Metadata.Name))
@@ -62,8 +59,7 @@ func reconcileInjected(cs model.KudecsV1) {
 			continue
 		}
 		s.Labels[model.ExpiresLabel+"-"+c.KeyName] = masterSecret.Labels[model.ExpiresLabel]
-		k := masterSecret.Data[c.SourceKey]
-		s.Data[c.KeyName] = k
+		s.Data[c.KeyName] = masterSecret.Data[c.SourceKey]
 		err = client.UpdateSecret(c.Namespace, s)
 		if err != nil {
 			logrus.Errorln(fmt.Sprintf("unexpected error updating injected secret (%s/%s)", c.Namespace, c.SecretName))
