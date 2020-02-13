@@ -59,26 +59,13 @@ func main() {
 }
 
 func update() {
-
-	logrus.Debugln("> Getting all namespaces")
-	nsl, err := client.GetAllNS()
+	logrus.Debugln(">> Getting CRDs in all namespaces")
+	crds, err := client.GetAllCRD("", model.KudecsV1CRDSchema)
 	if err != nil {
 		logrus.Errorln(err)
 		return
 	}
-
-	allCRDs := make([]model.KudecsV1, 0)
-	for _, ns := range nsl {
-		logrus.Debugln(">> Getting CRDs in", ns)
-		crds, err := client.GetAllCRD(ns, model.KudecsV1CRDSchema)
-		if err != nil {
-			logrus.Errorln(err)
-			return
-		}
-		allCRDs = append(allCRDs, crds...)
-	}
-
-	for _, a := range allCRDs {
+	for _, a := range crds {
 		controller.ReconHub.Add(a)
 	}
 
