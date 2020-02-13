@@ -60,7 +60,7 @@ type GenerateRequest struct {
 	NotAfter           time.Time
 }
 
-func GenerateCert(request GenerateRequest) (private, public []byte) {
+func generatePrivate() (interface{}, error) {
 	var priv interface{}
 	var err error
 	switch ecdsaCurve {
@@ -81,6 +81,11 @@ func GenerateCert(request GenerateRequest) (private, public []byte) {
 	default:
 		log.Fatalf("Unrecognized elliptic curve: %q", ecdsaCurve)
 	}
+	return priv, err
+}
+
+func GenerateCert(request GenerateRequest) (private, public []byte) {
+	priv, err := generatePrivate()
 	if err != nil {
 		log.Fatalf("Failed to generate private key: %s", err)
 	}
