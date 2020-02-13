@@ -29,11 +29,6 @@ func reconcileMasterKudec(cs model.KudecsV1) {
 
 func reconcileMaster(cs model.KudecsV1, masterSecret *cv1.Secret, create bool, update bool) {
 
-	/////////////////////////////////////////////////
-	/*
-		MODIFYING THE SECRET
-	*/
-	/////////////////////////////////////////////////
 	if create {
 		logrus.Infoln("> Generating master certificate")
 		logrus.Infoln(fmt.Sprintf("  Requester: %s/%s", cs.Metadata.Namespace, cs.Metadata.Name))
@@ -46,12 +41,6 @@ func reconcileMaster(cs model.KudecsV1, masterSecret *cv1.Secret, create bool, u
 		logrus.Infoln(fmt.Sprintf("  Master stored as: %s/%s", model.StoreNamespace, cs.GetMasterSecretName()))
 		updateMasterSecret(cs, masterSecret)
 	}
-
-	/////////////////////////////////////////////////
-	/*
-		PERSISTING THE SECRET
-	*/
-	/////////////////////////////////////////////////
 	if create {
 		err := client.CreateSecret(model.StoreNamespace, masterSecret)
 		if err != nil {
@@ -62,7 +51,6 @@ func reconcileMaster(cs model.KudecsV1, masterSecret *cv1.Secret, create bool, u
 		logrus.Infoln(model.LogOK)
 		return
 	}
-
 	if update {
 		err := client.UpdateSecret(model.StoreNamespace, masterSecret)
 		if err != nil {
@@ -72,7 +60,6 @@ func reconcileMaster(cs model.KudecsV1, masterSecret *cv1.Secret, create bool, u
 		}
 		logrus.Infoln(model.LogOK)
 		return
-
 	}
 
 }
