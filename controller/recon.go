@@ -8,7 +8,10 @@ import (
 var ReconHub = NewReconHub()
 
 func NewReconHub() *reconHub {
-	r := &reconHub{in: make(chan model.KudecsV1, 256)}
+	r := &reconHub{
+		in:     make(chan model.KudecsV1, 256),
+		delete: make(chan model.KudecsV1, 256),
+	}
 	go func() {
 		for cs := range r.in {
 			logrus.Debugln("recon hub has received", cs.GetID(), "event")
@@ -19,11 +22,15 @@ func NewReconHub() *reconHub {
 }
 
 type reconHub struct {
-	in chan model.KudecsV1
+	in     chan model.KudecsV1
+	delete chan model.KudecsV1
 }
 
 func (r *reconHub) Add(cs model.KudecsV1) {
 	r.in <- cs
+}
+func (r *reconHub) Remove(cs model.KudecsV1) {
+	r.delete <- cs
 }
 
 func checkAndUpdate(cs model.KudecsV1) {

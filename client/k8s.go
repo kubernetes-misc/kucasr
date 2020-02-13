@@ -59,20 +59,6 @@ func BuildClient() (err error) {
 	return
 }
 
-func GetAllNS() ([]string, error) {
-	logrus.Debugln("== getting namespaces ==")
-	ls, err := clientset.CoreV1().Namespaces().List(metav1.ListOptions{})
-	if err != nil {
-		logrus.Errorln(err)
-		return nil, err
-	}
-	result := make([]string, len(ls.Items))
-	for i, n := range ls.Items {
-		result[i] = n.Name
-	}
-	return result, nil
-}
-
 type WrappedCRD struct {
 	Type   string         `json:"Type"`
 	Object model.KudecsV1 `json:"Object"`
