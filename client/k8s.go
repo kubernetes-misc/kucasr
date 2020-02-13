@@ -11,8 +11,10 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"os"
 	"path/filepath"
 )
 
@@ -20,25 +22,35 @@ var clientset *kubernetes.Clientset
 var dynClient dynamic.Interface
 
 func BuildClient() (err error) {
-	var kubeconfig *string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	}
-	flag.Parse()
+	var config *rest.Config
 
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
-	if err != nil {
-		logrus.Errorln(err)
-		return
+	authInCluster := os.Getenv("authInCluster")
+	if authInCluster == "true" {
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			logrus.Errorln("could not auth in cluster")
+			panic(err.Error())
+		}
+	} else {
+		var kubeconfig *string
+		if home := homedir.HomeDir(); home != "" {
+			kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+		} else {
+			kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+		}
+		flag.Parse()
+		config, err = clientcmd.BuildConfigFromFlags("", *kubeconfig)
+		if err != nil {
+			logrus.Errorln(err)
+			return
+		}
 	}
+
 	clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		logrus.Errorln(err)
 		return
 	}
-
 	dynClient, err = dynamic.NewForConfig(config)
 	if err != nil {
 		logrus.Errorln(fmt.Sprintf("Error received creating client %v", err))
@@ -69,7 +81,12 @@ type WrappedSecret struct {
 func WatchCRDS(crd schema.GroupVersionResource) {
 	logrus.Debugln("== subscribing CRDs ==")
 	crdClient := dynClient.Resource(crd)
-	w, _ := crdClient.Namespace("").Watch(metav1.ListOptions{})
+	w, err := crdClient.Namespace("").Watch(metav1.ListOptions{})
+	if err != nil {
+		logrus.Errorln("could not watch crds")
+		logrus.Errorln(err)
+		return
+	}
 	for r := range w.ResultChan() {
 		b, _ := json.Marshal(r)
 		wrapped := &WrappedSecret{}

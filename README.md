@@ -65,11 +65,11 @@ spec:
   organizationalUnit: IT
   injectedSecrets:
     - namespace: default
-      secretName: okwp-secret-key
+      secretName: secret-key
       sourceKey: private
       keyName: private
     - namespace: default
-      secretName: okwp-secret-pub
+      secretName: secret-pub
       sourceKey: public
       keyName: public
 ```

@@ -19,6 +19,7 @@ const DefaultCronSpec = "*/10 * * * * *"
 func main() {
 	logrus.Println("Kubernetes Declarative Certificates Secrets")
 	logrus.Println("Starting up...")
+
 	model.StoreNamespace = os.Getenv("storeNamespace")
 	if model.StoreNamespace == "" {
 		logrus.Fatalln("no storeNamespace set! You must provide a namespace in which to store the master copy of the secrets as storeNamespace env variable")

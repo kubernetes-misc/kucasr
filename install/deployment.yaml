@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kudecs
+  namespace: kudecs
+spec:
+  selector:
+    matchLabels:
+      app: kudecs
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kudecs
+    spec:
+      serviceAccountName: kudecs-svc-acc
+      containers:
+        - env:
+            - name: storeNamespace
+              value: "kudecs"
+            - name: authInCluster
+              value: "true"
+          image: kubernetesmisc/kudecs:dev-aic1
+          imagePullPolicy: Always
+          name: kudecs
+          resources:
+            limits:
+              cpu: 500m
+              memory: 64Mi
+            requests:
+              cpu: 500m
+              memory: 64Mi
