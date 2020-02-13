@@ -18,10 +18,10 @@ func NewReconHub() *reconHub {
 		for {
 			select {
 			case cs := <-r.in:
-				logrus.Infoln("recon hub has received", cs.GetID(), "event")
+				logrus.Debugln("recon hub has received", cs.GetID(), "event")
 				checkAndUpdate(cs)
 			case cs := <-r.delete:
-				logrus.Infoln("recon hub has received", cs.GetID(), "event (delete)")
+				logrus.Debugln("recon hub has received", cs.GetID(), "event (delete)")
 				deleteCerts(cs)
 			}
 		}
