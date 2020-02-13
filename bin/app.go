@@ -14,7 +14,7 @@ import (
 	// Or uncomment to load specific auth plugins
 )
 
-const DefaultCronSpec = "*/10 * * * * *"
+const DefaultCronSpec = "*/30 * * * * *"
 
 func main() {
 	logrus.Println("Kubernetes Declarative Certificates Secrets")
@@ -43,7 +43,17 @@ func main() {
 		panic(err)
 	}
 	logrus.SetLevel(logrus.InfoLevel)
-	go client.WatchCRDS(model.KudecsV1CRDSchema)
+	diff := client.WatchCRDS(model.KudecsV1CRDSchema)
+	go func() {
+		for d := range diff {
+			if d.Type == "DELETED" {
+				//TODO: clean up master and injected
+				//Remove
+			} else {
+				controller.ReconHub.Add(d.Object)
+			}
+		}
+	}()
 	select {}
 
 }

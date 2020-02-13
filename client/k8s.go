@@ -73,26 +73,31 @@ func GetAllNS() ([]string, error) {
 	return result, nil
 }
 
-type WrappedSecret struct {
-	Type   string     `json:"Type"`
-	Object cv1.Secret `json:"Object"`
+type WrappedCRD struct {
+	Type   string         `json:"Type"`
+	Object model.KudecsV1 `json:"Object"`
 }
 
-func WatchCRDS(crd schema.GroupVersionResource) {
-	logrus.Debugln("== subscribing CRDs ==")
-	crdClient := dynClient.Resource(crd)
-	w, err := crdClient.Namespace("").Watch(metav1.ListOptions{})
-	if err != nil {
-		logrus.Errorln("could not watch crds")
-		logrus.Errorln(err)
-		return
-	}
-	for r := range w.ResultChan() {
-		b, _ := json.Marshal(r)
-		wrapped := &WrappedSecret{}
-		json.Unmarshal(b, wrapped)
-		logrus.Println(wrapped.Type, wrapped.Object.Namespace, wrapped.Object.Name)
-	}
+func WatchCRDS(crd schema.GroupVersionResource) chan WrappedCRD {
+	result := make(chan WrappedCRD)
+	go func() {
+		logrus.Debugln("== subscribing CRDs ==")
+		crdClient := dynClient.Resource(crd)
+		w, err := crdClient.Namespace("").Watch(metav1.ListOptions{})
+		if err != nil {
+			logrus.Errorln("could not watch crds")
+			logrus.Errorln(err)
+			return
+		}
+		for r := range w.ResultChan() {
+			b, _ := json.Marshal(r)
+			wrapped := WrappedCRD{}
+			json.Unmarshal(b, &wrapped)
+			result <- wrapped
+		}
+
+	}()
+	return result
 
 }
 func GetAllCRD(namespace string, crd schema.GroupVersionResource) (result []model.KudecsV1, err error) {

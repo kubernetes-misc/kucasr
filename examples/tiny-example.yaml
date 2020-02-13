@@ -1,7 +1,7 @@
 apiVersion: "kubernetes-misc.xyz/v1"
 kind: kudec
 metadata:
-  name: example-cert-kudecs
+  name: example
 spec:
   days: 365
   countryName: ZA
@@ -22,7 +22,7 @@ spec:
 apiVersion: "kubernetes-misc.xyz/v1"
 kind: kudec
 metadata:
-  name: example-together
+  name: example2
 spec:
   days: 365
   countryName: ZA

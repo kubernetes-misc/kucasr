@@ -9,82 +9,31 @@ KUberenetes DEclarative Certificates as Secrets<br />
 
 ## How to use
 
-### Create the crd
+### Create the namespace, CRD, service account, cluster role, cluster role binding and deployment
 ```shell script
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-misc/kudecs/master/yaml/crd.yaml
+kubectl create ns kudecs
+kubectl apply -n kudecs -f https://raw.githubusercontent.com/kubernetes-misc/kudecs/master/install/crd.yaml
+kubectl apply -n kudecs -f https://raw.githubusercontent.com/kubernetes-misc/kudecs/master/install/clusterrole.yaml
+kubectl apply -n kudecs -f https://raw.githubusercontent.com/kubernetes-misc/kudecs/master/install/deployment.yaml
 ```
 
-### Deploy to cluster
-- Create a new file called `kudecs.yaml`
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: kudecs
-  namespace: kudecs
-spec:
-  selector:
-    matchLabels:
-      app: kudecs
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: kudecs
-    spec:
-      containers:
-      - env:
-        - name: storeNamespace
-          value: kudecs
-        image: kubernetesmisc/kudecs:latest
-        imagePullPolicy: Always
-        name: kudecs
-        resources:
-          limits:
-            cpu: 500m
-            memory: 64Mi
-          requests:
-            cpu: 500m
-            memory: 64Mi
-```
-
-
-### Create a kudec (CRD)
-
-- Create a new kudecs yaml file `example.yaml` and populate with the following yaml
-```yaml
-apiVersion: "kubernetes-misc.xyz/v1"
-kind: kudec
-metadata:
-  name: example
-spec:
-  days: 365
-  countryName: USA
-  stateName: NY
-  organizationName: Kubernetes Misc
-  organizationalUnit: IT
-  injectedSecrets:
-    - namespace: default
-      secretName: secret-key
-      sourceKey: private
-      keyName: private
-    - namespace: default
-      secretName: secret-pub
-      sourceKey: public
-      keyName: public
-```
-
-Apply the example
+Check that you can see the changes
 ```shell script
-kubectl apply -f example.yaml
+kubectl get all -n kudecs
 ```
 
-Check that you can see your change
+
+### Create a kudec CRD
 ```shell script
-kubectl get kudecs/example -o yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-misc/kudecs/master/examples/tiny-example.yaml
 ```
 
-Check the application logs to see that it is running
+Check that you can see the changes
+```shell script
+kubectl get kudecs -o yaml
+```
+
+Check the application logs to see what kudecs says about your kudec
 ```shell script
 kubectl logs deployment/kudecs
 ```
@@ -96,11 +45,6 @@ kubectl get secrets -o yaml
 
 
 ## Roadmap
-
-### Version 1
-- In-cluster authentication
-- Official :latest docker image
-- Deployment yaml
 
 ### Version 2
 - HA deployment support

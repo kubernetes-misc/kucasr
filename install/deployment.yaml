@@ -1,3 +1,4 @@
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -20,7 +21,7 @@ spec:
               value: "kudecs"
             - name: authInCluster
               value: "true"
-          image: kubernetesmisc/kudecs:dev-aic1
+          image: kubernetesmisc/kudecs:latest
           imagePullPolicy: Always
           name: kudecs
           resources:
