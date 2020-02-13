@@ -47,9 +47,10 @@ func main() {
 	go func() {
 		for d := range diff {
 			if d.Type == "DELETED" {
-				//TODO: clean up master and injected
-				//Remove
+				logrus.Println("deleted...")
+				controller.ReconHub.Remove(d.Object)
 			} else {
+				logrus.Println("created...")
 				controller.ReconHub.Add(d.Object)
 			}
 		}

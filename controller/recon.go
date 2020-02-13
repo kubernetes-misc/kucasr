@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/kubernetes-misc/kudecs/client"
 	"github.com/kubernetes-misc/kudecs/model"
 	"github.com/sirupsen/logrus"
 )
@@ -13,10 +15,17 @@ func NewReconHub() *reconHub {
 		delete: make(chan model.KudecsV1, 256),
 	}
 	go func() {
-		for cs := range r.in {
-			logrus.Debugln("recon hub has received", cs.GetID(), "event")
-			checkAndUpdate(cs)
+		for {
+			select {
+			case cs := <-r.in:
+				logrus.Infoln("recon hub has received", cs.GetID(), "event")
+				checkAndUpdate(cs)
+			case cs := <-r.delete:
+				logrus.Infoln("recon hub has received", cs.GetID(), "event (delete)")
+				deleteCerts(cs)
+			}
 		}
+
 	}()
 	return r
 }
@@ -36,4 +45,19 @@ func (r *reconHub) Remove(cs model.KudecsV1) {
 func checkAndUpdate(cs model.KudecsV1) {
 	reconcileMaster(cs)
 	reconcileInjected(cs)
+}
+
+func deleteCerts(cs model.KudecsV1) {
+	//TODO: figure out if we should remove and how to remove the injected entries
+	logrus.Println(fmt.Sprintf("> Removing kudec %s/%s derived objects", cs.Metadata.Namespace, cs.Metadata.Name))
+
+	//For now delete the master
+	err := client.DeleteSecret(model.StoreNamespace, cs.GetMasterSecretName())
+	if err != nil {
+		logrus.Errorln(fmt.Sprintf("could not delete master secrets %s/%s", model.StoreNamespace, cs.GetMasterSecretName()))
+		logrus.Println(model.LogFAIL)
+		return
+	}
+	logrus.Println(model.LogOK)
+
 }
