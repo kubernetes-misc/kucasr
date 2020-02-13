@@ -21,7 +21,7 @@ func reconcileInjected(cs model.KudecsV1) {
 	}
 
 	reconcileInjectedCreates(cs, create, masterSecret)
-	reconcileInjectedUpdates(cs, create, masterSecret)
+	reconcileInjectedUpdates(cs, update, masterSecret)
 
 }
 
