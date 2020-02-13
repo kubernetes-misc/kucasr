@@ -86,16 +86,7 @@ func getMasterSecretTasks(cs model.KudecsV1) (create, update bool) {
 }
 
 func newMasterSecret(cs model.KudecsV1) (secret *cv1.Secret) {
-	genReq := gen.GenerateRequest{
-		CountryName:        cs.Spec.CountryName,
-		StateName:          cs.Spec.StateName,
-		LocalityName:       cs.Spec.LocalityName,
-		OrganizationName:   cs.Spec.OrganizationName,
-		OrganizationalUnit: cs.Spec.OrganizationalUnit,
-		Hosts:              []string{""},
-		NotBefore:          time.Now(),
-		NotAfter:           time.Now().Add(time.Duration(cs.Spec.Days*24) * time.Hour),
-	}
+	genReq := gen.NewGenerateRequest(cs)
 	private, public := gen.GenerateCert(genReq)
 	n := fmt.Sprintf("%v", genReq.NotAfter.UnixNano())
 	secret = &cv1.Secret{
@@ -115,16 +106,7 @@ func newMasterSecret(cs model.KudecsV1) (secret *cv1.Secret) {
 }
 
 func updateMasterSecret(cs model.KudecsV1, secret *cv1.Secret) {
-	genReq := gen.GenerateRequest{
-		CountryName:        cs.Spec.CountryName,
-		StateName:          cs.Spec.StateName,
-		LocalityName:       cs.Spec.LocalityName,
-		OrganizationName:   cs.Spec.OrganizationName,
-		OrganizationalUnit: cs.Spec.OrganizationalUnit,
-		Hosts:              []string{""},
-		NotBefore:          time.Now(),
-		NotAfter:           time.Now().Add(time.Duration(cs.Spec.Days*24) * time.Hour),
-	}
+	genReq := gen.NewGenerateRequest(cs)
 	private, public := gen.GenerateCert(genReq)
 	n := fmt.Sprintf("%v", genReq.NotAfter.UnixNano())
 	secret.Labels[model.ExpiresLabel] = n

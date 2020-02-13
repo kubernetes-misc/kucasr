@@ -43,7 +43,7 @@ func (r *reconHub) Remove(cs model.KudecsV1) {
 }
 
 func checkAndUpdate(cs model.KudecsV1) {
-	reconcileMaster(cs)
+	reconcileMasterKudec(cs)
 	reconcileInjected(cs)
 }
 

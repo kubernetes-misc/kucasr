@@ -8,6 +8,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"github.com/kubernetes-misc/kudecs/model"
 	"log"
 	"math/big"
 	"net"
@@ -32,6 +33,20 @@ func publicKey(priv interface{}) interface{} {
 	default:
 		return nil
 	}
+}
+
+func NewGenerateRequest(cs model.KudecsV1) GenerateRequest {
+	result := GenerateRequest{
+		CountryName:        cs.Spec.CountryName,
+		StateName:          cs.Spec.StateName,
+		LocalityName:       cs.Spec.LocalityName,
+		OrganizationName:   cs.Spec.OrganizationName,
+		OrganizationalUnit: cs.Spec.OrganizationalUnit,
+		Hosts:              []string{""},
+		NotBefore:          time.Now(),
+		NotAfter:           time.Now().Add(time.Duration(cs.Spec.Days*24) * time.Hour),
+	}
+	return result
 }
 
 type GenerateRequest struct {
