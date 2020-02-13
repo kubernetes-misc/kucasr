@@ -33,7 +33,7 @@ func GetExpiresFromSecret(secret *v1.Secret, labelName string) (expires time.Tim
 	}
 	unixNano, err := strconv.Atoi(expiresS)
 	if err != nil {
-		logrus.Errorln(fmt.Sprintf("master secret (%s) expires label cannot be read as int: %s", cs.GetMasterSecretName(), expiresS))
+		logrus.Errorln(fmt.Sprintf("master secret (%s/%s) expires label cannot be read as int: %s", secret.Namespace, secret.Name, expiresS))
 		return
 	}
 	expires = time.Unix(0, int64(unixNano))
