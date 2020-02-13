@@ -8,24 +8,13 @@ import (
 	"github.com/sirupsen/logrus"
 	cv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"strconv"
 	"time"
 )
 
-func reconcileMaster(cs model.KudecsV1) {
-	/////////////////////////////////////////////////
-	/*
-		WHAT NEEDS TO BE DONE
-	*/
-	/////////////////////////////////////////////////
+func reconcileMasterKudec(cs model.KudecsV1) {
 	create, update := getMasterSecretTasks(cs)
 	logrus.Debugln(fmt.Sprintf("getMasterTasks returning create: %t, update: %t", create, update))
 
-	/////////////////////////////////////////////////
-	/*
-		SOURCE OF MASTER SECRET
-	*/
-	/////////////////////////////////////////////////
 	var masterSecret *cv1.Secret
 	if !create {
 		var err error
@@ -35,6 +24,10 @@ func reconcileMaster(cs model.KudecsV1) {
 			return
 		}
 	}
+	reconcileMaster(cs, masterSecret, create, update)
+}
+
+func reconcileMaster(cs model.KudecsV1, masterSecret *cv1.Secret, create bool, update bool) {
 
 	/////////////////////////////////////////////////
 	/*
@@ -91,20 +84,12 @@ func getMasterSecretTasks(cs model.KudecsV1) (create, update bool) {
 		create = true
 		return
 	}
-
-	expiresS, hasKey := masterSecret.Labels[model.ExpiresLabel]
-	if !hasKey {
-		logrus.Errorln(fmt.Sprintf("master secret (%s) does not have label: %s", cs.GetMasterSecretName(), model.ExpiresLabel))
-		update = true
-		return
-	}
-	unixNano, err := strconv.Atoi(expiresS)
+	expires, err := model.GetExpiresFromSecret(masterSecret, model.ExpiresLabel)
 	if err != nil {
-		logrus.Errorln(fmt.Sprintf("master secret (%s) expires label cannot be read as int: %s", cs.GetMasterSecretName(), expiresS))
+		logrus.Errorln(fmt.Sprintf("could not get expiry date from master secret %s/%s", cs.Metadata.Namespace, cs.Metadata.Name))
 		update = true
 		return
 	}
-	expires := time.Unix(0, int64(unixNano))
 	if expires.Before(time.Now().Add(1 * time.Hour)) {
 		logrus.Infoln(fmt.Sprintf("master secret (%s) has expired", cs.GetMasterSecretName()))
 		update = true

@@ -1,8 +1,12 @@
 package model
 
 import (
+	"fmt"
+	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strconv"
+	"time"
 )
 
 func NewInjectSecret(c InjectedSecretsV1, masterSecret *v1.Secret) *v1.Secret {
@@ -19,4 +23,20 @@ func NewInjectSecret(c InjectedSecretsV1, masterSecret *v1.Secret) *v1.Secret {
 		Type: v1.SecretTypeOpaque,
 	}
 	return s
+}
+
+func GetExpiresFromSecret(secret *v1.Secret, labelName string) (expires time.Time, err error) {
+	expiresS, hasKey := secret.Labels[labelName]
+	if !hasKey {
+		logrus.Errorln(fmt.Sprintf("secret (%s/%s) does not have label: %s", secret.Namespace, secret.Name, labelName))
+		return
+	}
+	unixNano, err := strconv.Atoi(expiresS)
+	if err != nil {
+		logrus.Errorln(fmt.Sprintf("master secret (%s) expires label cannot be read as int: %s", cs.GetMasterSecretName(), expiresS))
+		return
+	}
+	expires = time.Unix(0, int64(unixNano))
+	return
+
 }
