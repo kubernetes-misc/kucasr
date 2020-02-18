@@ -12,7 +12,7 @@ metadata:
   name: kudec-clusterrole
 rules:
   - apiGroups: ["", "extensions", "kubernetes-misc.xyz"]
-    resources: ["nodes", "services", "endpoints", "namespaces", "ingresses", "pods", "secrets", "kudecs"]
+    resources: ["namespaces", "secrets", "kudecs"]
     verbs: ["get", "list", "watch", "update", "create", "patch"]
 ---
 kind: ClusterRoleBinding
