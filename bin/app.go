@@ -7,11 +7,6 @@ import (
 	cronV3 "github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 	"os"
-	//
-	// Uncomment to load all auth plugins
-	// _ "k8s.io/client-go/plugin/pkg/client/auth"
-	//
-	// Or uncomment to load specific auth plugins
 )
 
 const DefaultCronSpec = "*/30 * * * * *"
