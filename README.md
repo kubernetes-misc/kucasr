@@ -52,6 +52,7 @@ kubectl get secrets -o yaml
 - Namespace inclusions / exclusions
 - Delete policy (managed / master-only)
 - External certificate generation providers
+- 2 stage certificates - provide and apply
 
 
 
