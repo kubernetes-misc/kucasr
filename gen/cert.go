@@ -8,6 +8,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/pem"
 	"github.com/kubernetes-misc/kudecs/model"
 	"log"
 	"math/big"
@@ -136,7 +137,9 @@ func GenerateCert(request GenerateRequest) (private, public []byte) {
 		log.Fatalf("Unable to marshal private key: %v", err)
 	}
 
-	private = privBytes
+	privateKeyPemString := string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: privBytes}))
+
+	private = []byte(privateKeyPemString)
 	public = derBytes
 
 	return

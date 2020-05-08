@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 	"github.com/kubernetes-misc/kudecs/client"
-	"github.com/kubernetes-misc/kudecs/gen"
 	"github.com/kubernetes-misc/kudecs/model"
+	"github.com/kubernetes-misc/kudecs/openssl"
 	"github.com/sirupsen/logrus"
 	cv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -86,8 +86,8 @@ func getMasterSecretTasks(cs model.KudecsV1) (create, update bool) {
 }
 
 func newMasterSecret(cs model.KudecsV1) (secret *cv1.Secret) {
-	genReq := gen.NewGenerateRequest(cs)
-	private, public := gen.GenerateCert(genReq)
+	genReq := openssl.NewGenerateRequest(cs)
+	private, public := openssl.Generate(genReq)
 	n := fmt.Sprintf("%v", genReq.NotAfter.UnixNano())
 	secret = &cv1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
@@ -106,8 +106,8 @@ func newMasterSecret(cs model.KudecsV1) (secret *cv1.Secret) {
 }
 
 func updateMasterSecret(cs model.KudecsV1, secret *cv1.Secret) {
-	genReq := gen.NewGenerateRequest(cs)
-	private, public := gen.GenerateCert(genReq)
+	genReq := openssl.NewGenerateRequest(cs)
+	private, public := openssl.Generate(genReq)
 	n := fmt.Sprintf("%v", genReq.NotAfter.UnixNano())
 	secret.Labels[model.ExpiresLabel] = n
 	secret.Data = map[string][]byte{
