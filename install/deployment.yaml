@@ -21,7 +21,7 @@ spec:
               value: "kudecs"
             - name: authInCluster
               value: "true"
-          image: kubernetesmisc/kudecs:latest
+          image: kubernetesmisc/kudecs:v1.1.1
           imagePullPolicy: Always
           name: kudecs
           resources:

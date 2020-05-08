@@ -1,5 +1,5 @@
 # Kudecs
-<a href="https://hub.docker.com/repository/docker/kubernetesmisc/kudecs"><img src="https://img.shields.io/badge/Docker-v1.0.0-366934"></a>&nbsp;
+<a href="https://hub.docker.com/repository/docker/kubernetesmisc/kudecs"><img src="https://img.shields.io/badge/Docker-v1.1.1-366934"></a>&nbsp;
 <img src="https://img.shields.io/badge/Version-v1.0.0-366934">&nbsp;
 <a href="https://goreportcard.com/report/github.com/kubernetes-misc/kudecs"><img src="https://goreportcard.com/badge/github.com/kubernetes-misc/kudecs"></a>&nbsp;
 <a href="https://codebeat.co/projects/github-com-kubernetes-misc-kudecs-master"><img alt="codebeat badge" src="https://codebeat.co/badges/482ac388-fd64-4e9a-9dcd-f4b280889ad4" /></a>&nbsp;
