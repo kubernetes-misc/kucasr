@@ -75,8 +75,6 @@ func Generate(request GenerateRequest) ([]byte, []byte) {
 		logrus.Errorln("out:", outb.String(), "err:", errb.String())
 	}
 	private := outb.Bytes()
-	logrus.Println("setter")
-	logrus.Println(string(private))
 
 	public, err := ioutil.ReadFile(publicFile)
 
