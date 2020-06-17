@@ -97,9 +97,11 @@ func getInjectedSecretTasks(cs model.KudecsV1) (create []model.InjectedSecretsV1
 
 func certsEqual(master, secret *v1.Secret, is model.InjectedSecretsV1) bool {
 	if master.Labels[model.ExpiresLabel] != secret.Labels[model.ExpiresLabel+"-"+is.KeyName] {
+		logrus.Infoln(fmt.Sprintf(">>>  Certs not equal (expires label) %s/%s != %s/%s ", master.Namespace, master.Name, secret.Namespace, secret.Name))
 		return false
 	}
 	if !bytes.Equal(master.Data[is.SourceKey], secret.Data[is.KeyName]) {
+		logrus.Infoln(fmt.Sprintf(">>>  Certs not equal (Data) %s/%s != %s/%s ", master.Namespace, master.Name, secret.Namespace, secret.Name))
 		return false
 	}
 	return true

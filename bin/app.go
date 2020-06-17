@@ -10,10 +10,12 @@ import (
 )
 
 const DefaultCronSpec = "*/30 * * * * *"
+const Version = "v1.1.2"
 
 func main() {
 	logrus.Println("Kubernetes Declarative Certificates Secrets")
 	logrus.Println("Starting up...")
+	logrus.Println(Version)
 
 	model.StoreNamespace = os.Getenv("storeNamespace")
 	if model.StoreNamespace == "" {
